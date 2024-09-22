@@ -28,7 +28,7 @@ jobs:
         uses: jaywcjlove/markdown-to-html-cli@main
         with:
           source: '${{ steps.changed-files.outputs.all_changed_files }}'
-          output: './public/'
+          output: './public/${{ steps.changed-files.outputs.all_changed_files }}.html'
 
       # 変換したHTMLをGitHubにコミット
       - name: Commit HTML files
