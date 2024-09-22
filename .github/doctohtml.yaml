@@ -1,0 +1,50 @@
+name: Convert Markdown to HTML
+
+on:
+  push:
+    branches:
+      - main  # 実行したいブランチを指定
+    paths:
+      - 'doc/**/*.md'  # docディレクトリ配下の.mdファイルのみ検知
+
+jobs:
+  convert-md-to-html:
+    runs-on: ubuntu-latest
+    steps:
+      # リポジトリのチェックアウト
+      - uses: actions/checkout@v4
+
+      # 変更されたMarkdownファイルのリストを取得
+      - name: Get changed markdown files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            **.md
+
+      # Pandocをインストール
+      - name: Install Pandoc
+        run: sudo apt-get install -y pandoc
+
+      # MarkdownファイルをHTMLに変換
+      - name: Convert Markdown to HTML
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            if [[ $file == doc/*.md ]]; then
+              base_name=$(basename "$file" .md)
+              pandoc -f markdown -t html "$file" -o "public/${base_name}.html"
+            fi
+          done
+
+      # 変換したHTMLをGitHubにコミット
+      - name: Commit HTML files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add public/*.html
+          git commit -m "Auto-convert Markdown to HTML by GitHub Actions"
+          git push
