@@ -42,7 +42,7 @@ jobs:
             base_name=$(basename "$file" .md)
             echo "base_name: $base_name"
             echo "file: $file"
-            markdown-to-html "$file" -o "./public/${base_name}.html"
+            markdown-to-html --source "$file" -o "./public/${base_name}.html"
           done
 
       # 変換したHTMLをGitHubにコミット
