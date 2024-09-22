@@ -40,7 +40,16 @@ jobs:
         run: |
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             base_name=$(basename "$file" .md)
-            markdown-to-html "$file" -o "./public/${base_name}.html"
+            dir_name=$(dirname "$file")
+            if [[ "$dir_name" == "." ]]; then
+              # doc直下の場合
+              mkdir -p ./public
+              markdown-to-html "$file" -o "./public/${base_name}.html"
+            else
+              # サブディレクトリがある場合
+              mkdir -p "./public/$dir_name"
+              markdown-to-html "$file" -o "./public/$dir_name/${base_name}.html"
+            fi
           done
 
       # 変換したHTMLをGitHubにコミット
