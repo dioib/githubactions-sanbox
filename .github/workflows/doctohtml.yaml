@@ -40,7 +40,7 @@ jobs:
         run: |
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             base_name=$(basename "$file" .md)
-            mkdir -p ./public
+            mkdir -p ./public/$(dirname "$file")
             markdown-to-html "$file" -o "./public/${base_name}.html"
           done
 
