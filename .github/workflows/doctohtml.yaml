@@ -40,6 +40,8 @@ jobs:
           for file in ${ALL_CHANGED_FILES}; do
             if [[ $file == doc/*.md ]]; then
               base_name=$(basename "$file" .md)
+              echo "base_name: $base_name"
+              echo "file: $file"
               echo "Converting $file to public/${base_name}.html"
               pandoc -f markdown -t html --template=easy_template --metadata title="${base_name}" "$file" -o "public/${base_name}.html"
             fi
